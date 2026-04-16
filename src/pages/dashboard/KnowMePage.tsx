@@ -837,8 +837,9 @@ const KnowMePage = () => {
   /* ── THIS OR THAT: SPLASH ── */
   if (view === "thisorthat_splash") {
     return (
-      <div className="h-full flex items-center justify-center" style={{ background: "var(--swatch-cream-light)", padding: 16 }}>
-       <div className="relative overflow-hidden w-full h-full" style={{ borderRadius: 24 }}>
+      <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
+        <div className="max-w-[1280px] mx-auto px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
+          <div className="relative overflow-hidden" style={{ borderRadius: 20, minHeight: "min(calc(100dvh - 180px), 600px)" }}>
         {/* Teal side — fills left with diagonal clip */}
         <motion.div
           initial={{ x: "-100%" }}
@@ -939,7 +940,8 @@ const KnowMePage = () => {
             </motion.button>
           </motion.div>
         </div>
-       </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -951,126 +953,120 @@ const KnowMePage = () => {
     const progress = questionNumber / visibleCategoryTotal;
 
     return (
-      <div className="h-full relative overflow-hidden">
-        {/* Teal side — diagonal clip */}
-        <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, var(--swatch-teal) 0%, #245049 100%)", clipPath: "polygon(0 0, 58% 0, 42% 100%, 0 100%)" }} />
-        {/* Coral side — diagonal clip */}
-        <div className="absolute inset-0" style={{ background: "linear-gradient(200deg, var(--swatch-cedar-grove) 0%, #b5503d 100%)", clipPath: "polygon(58% 0, 100% 0, 100% 100%, 42% 100%)" }} />
+      <div className="h-full overflow-x-hidden overflow-y-auto px-1 pb-6">
+        <div className="max-w-[1280px] mx-auto px-3 pt-4 sm:px-4 md:px-6 md:pt-6">
+          {/* Game card — sits on page like every other card */}
+          <div className="relative overflow-hidden" style={{ borderRadius: 20, minHeight: "min(calc(100dvh - 180px), 600px)" }}>
+            {/* Teal side — diagonal clip */}
+            <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, var(--swatch-teal) 0%, #245049 100%)", clipPath: "polygon(0 0, 58% 0, 42% 100%, 0 100%)" }} />
+            {/* Coral side — diagonal clip */}
+            <div className="absolute inset-0" style={{ background: "linear-gradient(200deg, var(--swatch-cedar-grove) 0%, #b5503d 100%)", clipPath: "polygon(58% 0, 100% 0, 100% 100%, 42% 100%)" }} />
 
-        {/* Grain overlay */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")" }} />
+            {/* Grain overlay */}
+            <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")" }} />
 
-        {/* Progress bar — top, inside rounded container */}
-        <div className="absolute top-0 left-0 right-0 h-[3px] z-20">
-          <motion.div
-            className="absolute inset-y-0 left-0"
-            initial={false}
-            animate={{ width: `${progress * 100}%` }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.9))", borderRadius: "0 2px 2px 0" }}
-          />
-        </div>
+            {/* Counter badge — top right */}
+            <div className="absolute top-4 right-5 z-20">
+              <span className="text-[10px] tabular-nums px-2.5 py-1 rounded-full" style={{ fontFamily: "'Jost', sans-serif", color: "#fff", background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>
+                {questionNumber} of {visibleCategoryTotal}
+              </span>
+            </div>
 
-        {/* Counter badge — top right */}
-        <div className="absolute top-4 right-5 z-20">
-          <span className="text-[10px] tabular-nums px-2.5 py-1 rounded-full" style={{ fontFamily: "'Jost', sans-serif", color: "#fff", background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}>
-            {questionNumber} of {visibleCategoryTotal}
-          </span>
-        </div>
+            {/* Tap zones — left = option A, right = option B */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTotQuestion.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="absolute inset-0 z-[5]"
+              >
+                {/* Left: teal side — option A */}
+                <button
+                  onClick={() => void pickThisOrThat(activeTotQuestion, "A")}
+                  className="absolute top-0 left-0 bottom-0 cursor-pointer group"
+                  style={{ width: "50%" }}
+                >
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 60%)" }} />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-10 text-center">
+                    <motion.p
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.08, type: "spring", stiffness: 300, damping: 26 }}
+                      className="text-[9px] uppercase tracking-[0.24em] mb-3"
+                      style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)", fontWeight: 500 }}
+                    >This</motion.p>
+                    <motion.p
+                      initial={{ opacity: 0, y: 18 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.14, type: "spring", stiffness: 280, damping: 24 }}
+                      className="text-[28px] md:text-[40px] leading-[1.05] max-w-[14ch]"
+                      style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)" }}
+                    >{activeTotQuestion.categoryA}</motion.p>
+                  </div>
+                </button>
 
-        {/* Tap zones — left = option A, right = option B */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTotQuestion.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="absolute inset-0 z-[5]"
-          >
-            {/* Left: teal side — option A */}
-            <button
-              onClick={() => void pickThisOrThat(activeTotQuestion, "A")}
-              className="absolute top-0 left-0 bottom-0 cursor-pointer group"
-              style={{ width: "50%" }}
-            >
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 60%)" }} />
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-10 text-center">
-                <motion.p
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.08, type: "spring", stiffness: 300, damping: 26 }}
-                  className="text-[9px] uppercase tracking-[0.24em] mb-3"
-                  style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)", fontWeight: 500 }}
-                >This</motion.p>
-                <motion.p
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.14, type: "spring", stiffness: 280, damping: 24 }}
-                  className="text-[28px] md:text-[40px] leading-[1.05] max-w-[14ch]"
-                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)" }}
-                >{activeTotQuestion.categoryA}</motion.p>
-              </div>
-            </button>
+                {/* Right: coral side — option B */}
+                <button
+                  onClick={() => void pickThisOrThat(activeTotQuestion, "B")}
+                  className="absolute top-0 right-0 bottom-0 cursor-pointer group"
+                  style={{ width: "50%" }}
+                >
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 60%)" }} />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-10 text-center">
+                    <motion.p
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.08, type: "spring", stiffness: 300, damping: 26 }}
+                      className="text-[9px] uppercase tracking-[0.24em] mb-3"
+                      style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)", fontWeight: 500 }}
+                    >That</motion.p>
+                    <motion.p
+                      initial={{ opacity: 0, y: 18 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.14, type: "spring", stiffness: 280, damping: 24 }}
+                      className="text-[28px] md:text-[40px] leading-[1.05] max-w-[14ch]"
+                      style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)" }}
+                    >{activeTotQuestion.categoryB}</motion.p>
+                  </div>
+                </button>
+              </motion.div>
+            </AnimatePresence>
 
-            {/* Right: coral side — option B */}
-            <button
-              onClick={() => void pickThisOrThat(activeTotQuestion, "B")}
-              className="absolute top-0 right-0 bottom-0 cursor-pointer group"
-              style={{ width: "50%" }}
-            >
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 60%)" }} />
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-10 text-center">
-                <motion.p
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.08, type: "spring", stiffness: 300, damping: 26 }}
-                  className="text-[9px] uppercase tracking-[0.24em] mb-3"
-                  style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)", fontWeight: 500 }}
-                >That</motion.p>
-                <motion.p
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.14, type: "spring", stiffness: 280, damping: 24 }}
-                  className="text-[28px] md:text-[40px] leading-[1.05] max-w-[14ch]"
-                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)" }}
-                >{activeTotQuestion.categoryB}</motion.p>
-              </div>
-            </button>
-          </motion.div>
-        </AnimatePresence>
+            {/* Soft glow behind center card */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] md:w-[420px] md:h-[420px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%)", filter: "blur(40px)" }} />
 
-        {/* Soft glow behind center card */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] md:w-[420px] md:h-[420px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%)", filter: "blur(40px)" }} />
+            {/* Centered frosted card — question prompt */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTotQuestion.id + "-card"}
+                  initial={{ opacity: 0, y: 20, scale: 0.92 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.92 }}
+                  transition={{ type: "spring", stiffness: 220, damping: 22 }}
+                  className="pointer-events-auto text-center mx-4 max-w-[380px]"
+                  style={{
+                    background: "rgba(255,255,255,0.88)",
+                    backdropFilter: "blur(32px)",
+                    WebkitBackdropFilter: "blur(32px)",
+                    borderRadius: 28,
+                    padding: "40px 36px",
+                    boxShadow: "0 32px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(255,255,255,0.5) inset",
+                  }}
+                >
+                  {/* Decorative line */}
+                  <div className="mx-auto mb-5 h-[2px] w-12" style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))" }} />
 
-        {/* Centered frosted card — same as splash, just shows question */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTotQuestion.id + "-card"}
-              initial={{ opacity: 0, y: 20, scale: 0.92 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.92 }}
-              transition={{ type: "spring", stiffness: 220, damping: 22 }}
-              className="pointer-events-auto text-center mx-4 max-w-[380px]"
-              style={{
-                background: "rgba(255,255,255,0.88)",
-                backdropFilter: "blur(32px)",
-                WebkitBackdropFilter: "blur(32px)",
-                borderRadius: 28,
-                padding: "40px 36px",
-                boxShadow: "0 32px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(255,255,255,0.5) inset",
-              }}
-            >
-              {/* Decorative line */}
-              <div className="mx-auto mb-5 h-[2px] w-12" style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))" }} />
-
-              {/* Question prompt */}
-              <p className="text-[15px] md:text-[17px] leading-[1.55]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
-                {activeTotQuestion.prompt}
-              </p>
-            </motion.div>
-          </AnimatePresence>
+                  {/* Question prompt */}
+                  <p className="text-[15px] md:text-[17px] leading-[1.55]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-antique-coin)" }}>
+                    {activeTotQuestion.prompt}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
         </div>
       </div>
     );
