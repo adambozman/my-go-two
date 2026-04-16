@@ -593,7 +593,10 @@ const KnowMe = () => {
     }
   }, [view, totQueue.length, totQueueIndex, aiQuestionsLoading]);
 
-  if (contextLoading || subscriptionLoading) {
+  // Only show full-screen loading spinner on initial load, NOT during background refreshes
+  // while the user is actively playing This or That or viewing a quiz
+  const isInActiveView = view === "thisorthat" || view === "thisorthat_splash" || view === "quiz";
+  if ((contextLoading || subscriptionLoading) && !isInActiveView) {
     return (
       <div className="h-full flex items-center justify-center">
         <div
