@@ -342,7 +342,7 @@ export const scrapeExactProductWithFirecrawl = async ({
       },
       body: JSON.stringify({
         url: productUrl,
-        formats: ["markdown"],
+        formats: ["markdown", "images"],
         onlyMainContent: true,
         waitFor: 1500,
       }),
@@ -361,9 +361,13 @@ export const scrapeExactProductWithFirecrawl = async ({
         ? scrapeData.markdown
         : "";
     const scrapedProductTitle = extractBestTitle(metadata, rawMarkdown, cleanText(bestResult.title));
+    const scrapeImages: string[] = Array.isArray(scrapeData?.data?.images)
+      ? scrapeData.data.images.map((img: unknown) => typeof img === "string" ? img : cleanText((img as Record<string, unknown>)?.src))
+      : [];
     const imageCandidates = unique([
       cleanText(metadata.ogImage),
       ...extractMarkdownImageUrls(rawMarkdown),
+      ...scrapeImages,
     ].filter(Boolean));
     const bestImage = pickBestImage(imageCandidates, productName, brand);
     const scrapedPrice = extractPrice([
