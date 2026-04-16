@@ -3,7 +3,7 @@ import { useUserProfile } from "@/contexts/user-profile-context";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { RefreshCw, Loader2, Bookmark, Share2, ExternalLink, Sparkles } from "lucide-react";
-import { resolveStorageUrls } from "@/lib/storageRefs";
+import { useImageBank } from "@/hooks/useImageBank";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { PaginationControls } from "@/components/ui/pagination-controls";
@@ -81,7 +81,8 @@ const Recommendations = () => {
   const [generationVersion, setGenerationVersion] = useState<string | null>(null);
   const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
   const [inputSnapshotSummary, setInputSnapshotSummary] = useState<Record<string, unknown> | null>(null);
-  const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
+  const { images: heroImages } = useImageBank("hero");
+  const heroImageUrl = heroImages.length > 0 ? heroImages[0].url : null;
   const isUsingRebuiltEngine = Boolean(
     generationVersion && generationVersion.startsWith(RECOMMENDATION_V2_VERSION_PREFIX),
   );
@@ -138,24 +139,6 @@ const Recommendations = () => {
     }
   }, [activePillar, pillars]);
 
-  // Fetch a hero background image from the user's photo gallery
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const { data } = await supabase
-          .from("category_images")
-          .select("image_url")
-          .like("category_key", "mygotwo-strip-%")
-          .limit(1)
-          .maybeSingle();
-        if (cancelled || !data?.image_url) return;
-        const [resolved] = await resolveStorageUrls([data.image_url]);
-        if (!cancelled && resolved) setHeroImageUrl(resolved);
-      } catch { /* fallback to teal bg */ }
-    })();
-    return () => { cancelled = true; };
-  }, []);
 
   const filtered = useMemo(() => {
     if (activePillar === "all") return products;

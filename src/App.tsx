@@ -29,6 +29,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 // Internal asset-management tool. Not part of the public hero/login/dashboard journey.
 const PhotoGallery = lazy(() => import("./pages/PhotoGallery"));
+const ImageBankPage = lazy(() => import("./pages/ImageBankPage"));
 const Search = lazy(() => import("./pages/Search"));
 // Internal admin surface for sponsored content management.
 const SponsoredAdmin = lazy(() => import("./pages/admin/SponsoredAdmin"));
@@ -67,6 +68,7 @@ const App = () => {
                       <Route path="/connect" element={<Connect />} />
                       {/* Internal asset-management route, not part of the normal customer website. */}
                       <Route path="/photo-gallery" element={<PhotoGallery />} />
+                      <Route path="/image-bank" element={<ImageBankPage />} />
                       <Route path="/dashboard" element={<DashboardLayout />}>
                         <Route index element={<DashboardHome />} />
                         <Route path="my-go-two" element={<MyGoTwo />} />

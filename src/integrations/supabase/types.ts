@@ -316,6 +316,33 @@ export type Database = {
         }
         Relationships: []
       }
+      image_bank: {
+        Row: {
+          id: string
+          label: string
+          tag: string
+          storage_path: string
+          url: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          label?: string
+          tag?: string
+          storage_path: string
+          url: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          label?: string
+          tag?: string
+          storage_path?: string
+          url?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       category_registry: {
         Row: {
           created_at: string
