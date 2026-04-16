@@ -1107,37 +1107,26 @@ const KnowMe = () => {
                   <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.1) 100%)" }} />
                 </>
               )}
-              <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10 rounded-[16px] px-4 py-3 text-center backdrop-blur-md" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)" }}>
-                <p className="text-[36px] leading-none md:text-[44px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
-                  {vibeProgressPercent}<span className="text-[18px] md:text-[22px]">%</span>
-                </p>
-                <p className="text-[9px] uppercase tracking-[0.16em] mt-0.5" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>Profile read</p>
-              </div>
-              <div className="relative z-[1] flex flex-col justify-between h-full p-5 md:p-7">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.16em] mb-3" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.7)" }}>
-                    <GoTwoInline /> / Know Me
+              <div className="relative z-[1] flex flex-col h-full p-5 md:p-6">
+                <p className="text-[9px] uppercase tracking-[0.18em] mb-auto" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>Your Vibe</p>
+                <div className="flex-1 flex flex-col items-center justify-center text-center px-1">
+                  {yourVibe?.style_keywords && yourVibe.style_keywords.length > 0 ? (
+                    <h2 className="text-[26px] leading-[0.92] sm:text-[30px] md:text-[36px] italic" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                      {kmVibeOvr?.heading || yourVibe.style_keywords.slice(0, 3).join(" &\n")}
+                    </h2>
+                  ) : (
+                    <h2 className="text-[26px] leading-[0.92] sm:text-[30px] md:text-[36px] italic" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
+                      {kmVibeOvr?.heading || "Not enough\nanswers yet"}
+                    </h2>
+                  )}
+                  <p className="text-[11px] leading-[1.55] mt-3 max-w-[22ch] sm:text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.78)" }}>
+                    {kmVibeOvr?.subheading || yourVibe?.persona_summary || "Answer more questions so the AI can start reading your style."}
                   </p>
-                  <h1 className="text-[36px] leading-[0.88] max-w-[9ch] sm:text-[46px] md:text-[56px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
-                    {kmVibeOvr?.heading || "Your Vibe"}
-                  </h1>
                 </div>
-                <p className="text-[13px] leading-snug sm:text-[14px] max-w-[36ch] mt-4" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.85)" }}>
-                  {kmVibeOvr?.subheading || yourVibe?.persona_summary || "Building a read on whether your style leans cleaner, louder, softer, practical, or elevated."}
-                </p>
-                <div className="mt-auto pt-4">
-                  <div className="h-[4px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.2)" }}>
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.9), var(--swatch-cedar-grove))" }}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${vibeProgressPercent}%` }}
-                      transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                    />
-                  </div>
-                  <div className="flex items-center gap-5 mt-2">
-                    <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.65)" }}>{totalAnswered} answered</span>
-                    <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.45)" }}>{totalQuestions} total</span>
+                <div className="flex items-center justify-between mt-auto pt-2">
+                  <span className="text-[10px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)" }}>{totalAnswered} / {totalQuestions}</span>
+                  <div className="h-[3px] flex-1 mx-3 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.15)" }}>
+                    <div className="h-full rounded-full" style={{ width: `${vibeProgressPercent}%`, background: "rgba(255,255,255,0.7)", transition: "width 0.4s ease" }} />
                   </div>
                 </div>
               </div>
@@ -1204,25 +1193,26 @@ const KnowMe = () => {
                   <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.05) 100%)" }} />
                 </>
               )}
-              <div className="relative z-[1] flex flex-col justify-between h-full p-5 md:p-6">
-                <div className="flex items-center justify-between">
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: kmChatOvr?.image_url ? "rgba(255,255,255,0.7)" : "var(--swatch-cedar-grove)" }}>Style chat with AI</p>
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: kmChatOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.1)" }}>
-                    <Sparkles className="w-4 h-4" style={{ color: kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }} />
-                  </div>
+              <div className="relative z-[1] flex flex-col items-center justify-center h-full p-5 md:p-6 text-center">
+                {/* Decorative rings */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.08 }}>
+                  <div className="rounded-full" style={{ width: "85%", aspectRatio: "1", border: `1.5px solid ${kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)"}` }} />
                 </div>
-                <div>
-                  <h2 className="text-[24px] leading-[0.96] sm:text-[28px] md:text-[32px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)", maxWidth: "14ch" }}>
-                    {kmChatOvr?.heading || "Ask the AI about your style."}
-                  </h2>
-                  <p className="text-[12px] leading-relaxed mt-2 max-w-[28ch] sm:text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: kmChatOvr?.image_url ? "rgba(255,255,255,0.8)" : "var(--swatch-antique-coin)" }}>
-                    {kmChatOvr?.subheading || "Hear how the AI reads your vibe and what it's building toward."}
-                  </p>
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: 0.04 }}>
+                  <div className="rounded-full" style={{ width: "110%", aspectRatio: "1", border: `1.5px solid ${kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)"}` }} />
                 </div>
-                <div className="flex items-center justify-end">
-                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: kmChatOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.1)", border: `1px solid ${kmChatOvr?.image_url ? "rgba(255,255,255,0.2)" : "rgba(var(--swatch-teal-rgb), 0.18)"}` }}>
-                    <ChevronRight className="w-4 h-4" style={{ color: kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }} />
-                  </div>
+                {/* Sparkle icon */}
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mb-5" style={{ background: kmChatOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.08)" }}>
+                  <Sparkles className="w-5 h-5" style={{ color: kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }} />
+                </div>
+                <h2 className="text-[24px] leading-[0.96] sm:text-[28px] md:text-[32px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }}>
+                  {kmChatOvr?.heading || "Ask the AI"}
+                </h2>
+                <p className="text-[12px] mt-2 sm:text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: kmChatOvr?.image_url ? "rgba(255,255,255,0.7)" : "var(--swatch-antique-coin)" }}>
+                  {kmChatOvr?.subheading || "about your style"}
+                </p>
+                <div className="mt-6 rounded-full px-5 py-2 text-[10px] uppercase tracking-[0.14em] transition-transform group-hover:scale-105" style={{ fontFamily: "'Jost', sans-serif", color: kmChatOvr?.image_url ? "#fff" : "var(--swatch-teal)", border: `1px solid ${kmChatOvr?.image_url ? "rgba(255,255,255,0.3)" : "rgba(var(--swatch-teal-rgb), 0.2)"}` }}>
+                  Start →
                 </div>
               </div>
             </motion.button>
@@ -1274,33 +1264,32 @@ const KnowMe = () => {
                   <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.05) 100%)" }} />
                 </>
               )}
-              <div className="relative z-[1] flex flex-col justify-between h-full p-5 md:p-6">
-                <div className="flex items-center justify-between">
-                  <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.7)" : "var(--swatch-cedar-grove)" }}>Get to know you</p>
-                  <span className="rounded-full px-3 py-1 text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", background: kmCatOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.08)", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.9)" : "var(--swatch-teal)", border: `1px solid ${kmCatOvr?.image_url ? "rgba(255,255,255,0.2)" : "rgba(var(--swatch-teal-rgb), 0.14)"}`, backdropFilter: "blur(8px)" }}>
+              <div className="relative z-[1] flex flex-col h-full p-4 md:p-5">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-[9px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.6)" : "var(--swatch-antique-coin)" }}>Explore</p>
+                  <span className="rounded-full px-2.5 py-0.5 text-[8px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", background: "rgba(var(--swatch-cedar-grove-rgb, 217,101,79), 0.1)", color: "var(--swatch-cedar-grove)", border: "1px solid rgba(var(--swatch-cedar-grove-rgb, 217,101,79), 0.18)" }}>
                     {categories.length} categories
                   </span>
                 </div>
-                <div>
-                  <h2 className="text-[24px] leading-[0.96] sm:text-[28px] md:text-[34px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: kmCatOvr?.image_url ? "#fff" : "var(--swatch-teal)", maxWidth: "16ch" }}>
-                    {kmCatOvr?.heading || "Questions by Category"}
-                  </h2>
-                  <div className="flex flex-wrap gap-1.5 mt-3">
-                    {categories.map((cat) => (
-                      <span key={cat.id} className="rounded-full px-2.5 py-1 text-[10px]" style={{ fontFamily: "'Jost', sans-serif", background: kmCatOvr?.image_url ? (cat.complete ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.1)") : (cat.complete ? "rgba(var(--swatch-teal-rgb), 0.1)" : "rgba(255,255,255,0.55)"), color: kmCatOvr?.image_url ? "rgba(255,255,255,0.9)" : (cat.complete ? "var(--swatch-teal)" : "var(--swatch-antique-coin)"), border: kmCatOvr?.image_url ? "1px solid rgba(255,255,255,0.15)" : (cat.complete ? "1px solid rgba(var(--swatch-teal-rgb), 0.2)" : "1px solid rgba(var(--swatch-antique-coin-rgb), 0.15)") }}>
-                        {cat.title}
-                      </span>
-                    ))}
-                  </div>
+                <h2 className="text-[20px] leading-[0.96] sm:text-[24px] md:text-[28px] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: kmCatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }}>
+                  {kmCatOvr?.heading || "Categories\nby Question"}
+                </h2>
+                {/* Stacked category list */}
+                <div className="flex-1 flex flex-col justify-center gap-2">
+                  {categories.map((cat) => (
+                    <div key={cat.id} className="flex items-center justify-between">
+                      <span className="text-[11px] sm:text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.9)" : "var(--swatch-teal)" }}>{cat.title}</span>
+                      <span className="text-[10px]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.5)" : "var(--swatch-antique-coin)" }}>{cat.visibleAnswered} / {cat.visibleTotal}</span>
+                    </div>
+                  ))}
                 </div>
-                <div className="mt-auto flex items-center justify-between pt-2">
-                  <div className="flex items-center gap-4">
-                    <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.6)" : "var(--swatch-antique-coin)" }}>{totalAnswered} answered</span>
-                    <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.4)" : "var(--swatch-antique-coin)" }}>{totalQuestions} total</span>
-                  </div>
-                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: kmCatOvr?.image_url ? "rgba(255,255,255,0.15)" : "rgba(var(--swatch-teal-rgb), 0.1)", border: `1px solid ${kmCatOvr?.image_url ? "rgba(255,255,255,0.2)" : "rgba(var(--swatch-teal-rgb), 0.18)"}` }}>
-                    <ChevronRight className="w-4 h-4" style={{ color: kmCatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }} />
-                  </div>
+                {/* Footer */}
+                <div className="mt-auto pt-3 flex items-center justify-between" style={{ borderTop: `1px solid ${kmCatOvr?.image_url ? "rgba(255,255,255,0.12)" : "rgba(var(--swatch-teal-rgb), 0.1)"}` }}>
+                  <span className="text-[9px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.5)" : "var(--swatch-antique-coin)" }}>Progress</span>
+                  <span style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 16, color: kmCatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }}>
+                    {totalAnswered}<span style={{ fontWeight: 400, color: kmCatOvr?.image_url ? "rgba(255,255,255,0.4)" : "var(--swatch-antique-coin)", fontSize: 13 }}> / {totalQuestions}</span>
+                  </span>
                 </div>
               </div>
             </motion.button>
