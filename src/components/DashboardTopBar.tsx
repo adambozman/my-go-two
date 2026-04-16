@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Bell, Settings, Upload, Trash2, ChevronDown, LogOut, Home, Heart, Sparkles, ClipboardList } from "lucide-react";
+import { Bell, Settings, Upload, Trash2, ChevronDown, LogOut, Home, Heart, Sparkles, ClipboardList, ImageIcon } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import GoTwoText from "@/components/GoTwoText";
 import GoTwoInline from "@/components/GoTwoInline";
@@ -292,6 +292,10 @@ export function DashboardTopBar() {
               <DropdownMenuItem onClick={() => navigate("/dashboard/settings")} className="rounded-xl">
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/image-bank")} className="rounded-xl">
+                <ImageIcon className="mr-2 h-4 w-4" />
+                Image Bank
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => fileInputRef.current?.click()} className="rounded-xl">
                 <Upload className="mr-2 h-4 w-4" />
