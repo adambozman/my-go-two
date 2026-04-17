@@ -978,10 +978,30 @@ const KnowMe = () => {
             {/* Right side — Two color (teal) */}
             <div className="absolute inset-0" style={{ background: "linear-gradient(200deg, #00687a 0%, var(--swatch-teal) 100%)", clipPath: "polygon(58% 0, 100% 0, 100% 100%, 42% 100%)" }} />
 
+            {/* Diagonal seam — thin luminous edge where the two halves meet */}
+            <div className="absolute inset-0 pointer-events-none z-[2]" style={{ background: "linear-gradient(160deg, transparent 47.5%, rgba(255,255,255,0.22) 49.5%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.22) 50.5%, transparent 52.5%)" }} />
+
+            {/* "or" badge on the diagonal seam */}
+            <div className="absolute left-1/2 top-[22%] -translate-x-1/2 z-[3] pointer-events-none">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.18)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.25)" }}>
+                <span className="text-[10px] uppercase tracking-[0.08em]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: "rgba(255,255,255,0.7)" }}>or</span>
+              </div>
+            </div>
+
             {/* Grain overlay */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")" }} />
 
+            {/* Inner vignette for depth */}
+            <div className="absolute inset-0 pointer-events-none z-[1]" style={{ boxShadow: "inset 0 0 120px rgba(0,0,0,0.18)" }} />
 
+            {/* Question counter badge — top right */}
+            <div className="absolute top-4 right-4 z-20 pointer-events-none">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: "rgba(0,0,0,0.2)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
+                <span className="text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: "rgba(255,255,255,0.7)" }}>
+                  {totalTotAnswered + 1}
+                </span>
+              </div>
+            </div>
 
             {/* Tap zones — left = option A, right = option B */}
             <AnimatePresence mode="popLayout">
@@ -989,57 +1009,77 @@ const KnowMe = () => {
                 key={activeTotQuestion.id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.2 }}
                 className="absolute inset-0 z-[5]"
               >
-                {/* Left: teal side — option A */}
+                {/* Left: coral side — option A */}
                 <button
                   onClick={() => void pickThisOrThat(activeTotQuestion, "A")}
                   className="absolute top-0 left-0 bottom-0 cursor-pointer group"
                   style={{ width: "50%" }}
                 >
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 60%)" }} />
-                  <div className="absolute top-0 left-0 right-0 flex flex-col items-center justify-center pr-[30%] pl-4 md:pl-8 text-center" style={{ height: "50%", paddingTop: "8%" }}>
+                  {/* Hover glow */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-300" style={{ background: "radial-gradient(circle at 35% 40%, rgba(255,255,255,0.10) 0%, transparent 55%)" }} />
+                  {/* Active press scale */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pr-[28%] pl-4 md:pl-8 text-center transition-transform duration-150 group-active:scale-[0.97]">
                     <motion.p
-                      initial={{ opacity: 0, y: 12 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.08, type: "spring", stiffness: 300, damping: 26 }}
-                      className="text-[9px] uppercase tracking-[0.24em] mb-2"
-                      style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)", fontWeight: 500 }}
+                      transition={{ delay: 0.06, type: "spring", stiffness: 320, damping: 28 }}
+                      className="text-[10px] uppercase tracking-[0.28em] mb-3"
+                      style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.45)", fontWeight: 500, letterSpacing: "0.28em" }}
                     >This</motion.p>
                     <motion.p
-                      initial={{ opacity: 0, y: 18 }}
+                      initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.14, type: "spring", stiffness: 280, damping: 24 }}
-                      className="text-[22px] md:text-[32px] leading-[1.1]"
-                      style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)" }}
+                      transition={{ delay: 0.12, type: "spring", stiffness: 280, damping: 24 }}
+                      className="text-[24px] md:text-[34px] leading-[1.08]"
+                      style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.15)" }}
                     >{activeTotQuestion.categoryA}</motion.p>
+                    {/* Subtle underline accent */}
+                    <motion.div
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ delay: 0.25, duration: 0.5 }}
+                      className="mt-3 h-[1.5px] w-10 opacity-30"
+                      style={{ background: "rgba(255,255,255,0.6)" }}
+                    />
                   </div>
                 </button>
 
-                {/* Right: coral side — option B */}
+                {/* Right: teal side — option B */}
                 <button
                   onClick={() => void pickThisOrThat(activeTotQuestion, "B")}
                   className="absolute top-0 right-0 bottom-0 cursor-pointer group"
                   style={{ width: "50%" }}
                 >
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400" style={{ background: "radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 60%)" }} />
-                  <div className="absolute top-0 left-0 right-0 flex flex-col items-center justify-center pl-[30%] pr-4 md:pr-8 text-center" style={{ height: "50%", paddingTop: "8%" }}>
+                  {/* Hover glow */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-300" style={{ background: "radial-gradient(circle at 65% 40%, rgba(255,255,255,0.10) 0%, transparent 55%)" }} />
+                  {/* Active press scale */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pl-[28%] pr-4 md:pr-8 text-center transition-transform duration-150 group-active:scale-[0.97]">
                     <motion.p
-                      initial={{ opacity: 0, y: 12 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.08, type: "spring", stiffness: 300, damping: 26 }}
-                      className="text-[9px] uppercase tracking-[0.24em] mb-2"
-                      style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.5)", fontWeight: 500 }}
+                      transition={{ delay: 0.06, type: "spring", stiffness: 320, damping: 28 }}
+                      className="text-[10px] uppercase tracking-[0.28em] mb-3"
+                      style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.45)", fontWeight: 500, letterSpacing: "0.28em" }}
                     >That</motion.p>
                     <motion.p
-                      initial={{ opacity: 0, y: 18 }}
+                      initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.14, type: "spring", stiffness: 280, damping: 24 }}
-                      className="text-[22px] md:text-[32px] leading-[1.1]"
-                      style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)" }}
+                      transition={{ delay: 0.12, type: "spring", stiffness: 280, damping: 24 }}
+                      className="text-[24px] md:text-[34px] leading-[1.08]"
+                      style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.15)" }}
                     >{activeTotQuestion.categoryB}</motion.p>
+                    {/* Subtle underline accent */}
+                    <motion.div
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ delay: 0.25, duration: 0.5 }}
+                      className="mt-3 h-[1.5px] w-10 opacity-30"
+                      style={{ background: "rgba(255,255,255,0.6)" }}
+                    />
                   </div>
                 </button>
               </motion.div>
@@ -1053,28 +1093,29 @@ const KnowMe = () => {
               <AnimatePresence mode="popLayout">
                 <motion.div
                   key={activeTotQuestion.id + "-card"}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.15 }}
+                  initial={{ opacity: 0, scale: 0.94, y: 6 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.94, y: -6 }}
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                   className="pointer-events-auto text-center mx-4 w-full max-w-[380px]"
                   style={{
-                    background: "rgba(255,255,255,0.88)",
-                    backdropFilter: "blur(32px)",
-                    WebkitBackdropFilter: "blur(32px)",
+                    background: "rgba(255,255,255,0.90)",
+                    backdropFilter: "blur(40px)",
+                    WebkitBackdropFilter: "blur(40px)",
                     borderRadius: 28,
                     padding: "48px 36px",
-                    boxShadow: "0 32px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(255,255,255,0.5) inset",
+                    boxShadow: "0 32px 80px rgba(0,0,0,0.18), 0 8px 32px rgba(0,0,0,0.08), 0 0 0 1px rgba(255,255,255,0.55) inset",
+                    border: "1px solid rgba(255,255,255,0.3)",
                   }}
                 >
-                  {/* Decorative line */}
-                  <div className="mx-auto mb-5 h-[2px] w-12" style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))" }} />
+                  {/* Decorative line — gradient accent */}
+                  <div className="mx-auto mb-5 h-[2px] w-14" style={{ background: "linear-gradient(90deg, var(--swatch-teal), var(--swatch-cedar-grove))" }} />
 
                   {/* Question prompt — same size as splash title */}
-                  <h2 className="text-[28px] md:text-[36px] leading-[1.1] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
+                  <h2 className="text-[28px] md:text-[36px] leading-[1.1] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "var(--swatch-teal)" }}>
                     {activeTotQuestion.prompt}
                   </h2>
-                  <p className="text-[11px] uppercase tracking-[0.2em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", fontWeight: 500 }}>
+                  <p className="text-[10px] uppercase tracking-[0.22em]" style={{ fontFamily: "'Jost', sans-serif", color: "var(--swatch-cedar-grove)", fontWeight: 500, opacity: 0.75 }}>
                     Tap a side to choose
                   </p>
                 </motion.div>
