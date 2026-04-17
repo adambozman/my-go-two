@@ -16,6 +16,7 @@ import {
   type ThisOrThatV2CategoryDefinition,
   type ThisOrThatV2QuestionLike,
 } from "@/data/thisOrThatV2";
+import { loadQuestionBank, invalidateBankCache, type BankQuestion } from "@/data/thisOrThatV2Bank";
 import {
   buildKnowledgeAiAdapter,
   getCombinedKnowledgeResponses,
@@ -56,17 +57,6 @@ type ThisOrThatCategoryState = ThisOrThatV2CategoryDefinition & {
   complete: boolean;
   isLocked: boolean;
   isLive: boolean;
-};
-
-type AiGeneratedQuestion = {
-  id: string;
-  prompt: string;
-  categoryA: string;
-  categoryB: string;
-  category: string;
-  tagsForA: string[];
-  tagsForB: string[];
-  isAiGenerated: true;
 };
 
 type ThisOrThatAnswerPayload = ReturnType<typeof buildThisOrThatAnswerUpsertPayload>;
@@ -243,11 +233,11 @@ const KnowMe = () => {
   const [totSwipeDir, setTotSwipeDir] = useState<"left" | "right" | null>(null);
   const [totSplashSeen, setTotSplashSeen] = useState(false);
 
-  // Infinite This or That queue — shuffled static questions, then AI questions
-  const [totQueue, setTotQueue] = useState<(ThisOrThatV2QuestionLike | AiGeneratedQuestion)[]>([]);
+  // Infinite This or That queue — loaded from shared bank (DB + static merged)
+  const [totQueue, setTotQueue] = useState<BankQuestion[]>([]);
   const [totQueueIndex, setTotQueueIndex] = useState(0);
   const [totAnswerHistory, setTotAnswerHistory] = useState<{ prompt: string; chosen: string; rejected: string; category?: string }[]>([]);
-  const [aiQuestionsLoading, setAiQuestionsLoading] = useState(false);
+  const [bankLoading, setBankLoading] = useState(false);
   const [totalTotAnswered, setTotalTotAnswered] = useState(0);
 
   const [styleChatOpen, setStyleChatOpen] = useState(false);
@@ -273,7 +263,7 @@ const KnowMe = () => {
     );
   }, [knowMeResponses, subscribed]);
   const activeTotCategory = thisOrThatCategories.find((category) => category.id === activeTotCategoryId) ?? null;
-  const activeTotQuestion: (ThisOrThatV2QuestionLike | AiGeneratedQuestion) | null = totQueue[totQueueIndex] ?? null;
+  const activeTotQuestion: BankQuestion | null = totQueue[totQueueIndex] ?? null;
   const totalThisOrThatQuestions = thisOrThatCategories.reduce((sum, category) => sum + category.questions.length, 0);
   const totalThisOrThatAnswered = thisOrThatCategories.reduce((sum, category) => sum + category.answered, 0);
   const visibleThisOrThatCount = subscribed ? totalThisOrThatQuestions : Math.min(totalThisOrThatQuestions, FREE_THIS_OR_THAT_LIMIT * thisOrThatCategories.filter((category) => category.isLive).length);
@@ -456,58 +446,39 @@ const KnowMe = () => {
     setView("quiz");
   };
 
-  const buildShuffledQueue = useCallback(() => {
-    // Collect ALL questions from ALL live categories, filter out already-answered ones
-    const allQuestions: (ThisOrThatV2QuestionLike & { _categoryId?: string })[] = [];
-    for (const cat of thisOrThatCategories) {
-      if (!cat.isLive || cat.questions.length === 0) continue;
-      for (const q of cat.questions) {
-        const isAnswered = getAnswerValues(knowMeResponses?.[q.id]).length > 0;
-        if (!isAnswered) {
-          allQuestions.push({ ...q, _categoryId: cat.id });
-        }
-      }
-    }
-    return shuffleArray(allQuestions);
-  }, [thisOrThatCategories, knowMeResponses]);
-
-  const fetchAiQuestions = useCallback(async () => {
-    if (aiQuestionsLoading) return;
-    setAiQuestionsLoading(true);
+  const loadBankQueue = useCallback(async () => {
+    if (bankLoading) return;
+    setBankLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("this-or-that-ai", {
-        body: {
-          previousAnswers: totAnswerHistory,
-          count: 5,
-        },
-      });
-      if (error) throw error;
-      if (data?.questions && Array.isArray(data.questions)) {
-        setTotQueue((prev) => [...prev, ...data.questions]);
-      }
+      const bank = await loadQuestionBank();
+      // Filter out already-answered questions, then shuffle
+      const unanswered = bank.filter(
+        (q) => getAnswerValues(knowMeResponses?.[q.id]).length === 0,
+      );
+      return shuffleArray(unanswered);
     } catch (err) {
-      console.error("AI question generation failed:", err);
-      // Silently fail — user will just see a "generating..." state briefly
+      console.warn("Failed to load question bank:", err);
+      return [];
     } finally {
-      setAiQuestionsLoading(false);
+      setBankLoading(false);
     }
-  }, [aiQuestionsLoading, totAnswerHistory]);
+  }, [bankLoading, knowMeResponses]);
 
   const openThisOrThat = () => {
-    // Build a shuffled queue of ALL unanswered static questions
-    const queue = buildShuffledQueue();
-    if (queue.length === 0 && thisOrThatCategories.every((c) => !c.isLive || c.questions.length === 0)) {
-      toast("No categories available yet");
-      return;
-    }
     // Set the first category for persistence context
     const firstCat = thisOrThatCategories.find((c) => c.isLive && c.questions.length > 0);
     setActiveTotCategoryId(firstCat?.id ?? null);
-    setTotQueue(queue);
     setTotQueueIndex(0);
     setTotAnswerHistory([]);
     setTotalTotAnswered(0);
     setTotSwipeDir(null);
+
+    // Load from shared bank (DB + static merged) — async but fast (cached)
+    void (async () => {
+      const queue = await loadBankQueue();
+      setTotQueue(queue ?? []);
+    })();
+
     if (!totSplashSeen) {
       setView("thisorthat_splash");
     } else {
@@ -519,49 +490,142 @@ const KnowMe = () => {
 
   const getSectionForQuestion = (q: QuizQuestion) => SECTIONS.find((section) => section.id === q.section);
 
-  const pickThisOrThat = (question: ThisOrThatV2QuestionLike | AiGeneratedQuestion, choice: "A" | "B") => {
+  const pickThisOrThat = (question: BankQuestion, choice: "A" | "B") => {
     if (!question) return;
 
     const chosenLabel = choice === "A" ? question.categoryA : question.categoryB;
     const rejectedLabel = choice === "A" ? question.categoryB : question.categoryA;
-    const isAi = "isAiGenerated" in question && question.isAiGenerated;
 
     // ── Advance UI immediately (optimistic) ──
-    const category = isAi ? (question as AiGeneratedQuestion).category : undefined;
     setTotAnswerHistory((prev) => [
       ...prev,
-      { prompt: question.prompt, chosen: chosenLabel, rejected: rejectedLabel, category },
+      { prompt: question.prompt, chosen: chosenLabel, rejected: rejectedLabel, category: question.categoryKey ?? undefined },
     ]);
     setTotalTotAnswered((prev) => prev + 1);
 
     const nextIndex = totQueueIndex + 1;
-
-    // Pre-fetch AI questions when we're getting close to running out
-    if (nextIndex >= totQueue.length - 2 && !aiQuestionsLoading) {
-      void fetchAiQuestions();
-    }
-
     if (nextIndex < totQueue.length) {
-      const nextQ = totQueue[nextIndex];
-      if (nextQ && "_categoryId" in nextQ && (nextQ as ThisOrThatV2QuestionLike & { _categoryId?: string })._categoryId) {
-        setActiveTotCategoryId((nextQ as ThisOrThatV2QuestionLike & { _categoryId?: string })._categoryId!);
-      }
       setTotQueueIndex(nextIndex);
-    } else if (!aiQuestionsLoading) {
-      void fetchAiQuestions();
     }
+    // No more per-session AI fetching — bank growth is triggered automatically by loadQuestionBank
 
     // ── Persist in background (fire-and-forget) ──
     void (async () => {
       try {
         await persistKnowMeResponses({ [question.id]: chosenLabel });
-        if (!isAi && activeTotCategory) {
+
+        if (question.source === "authored" && activeTotCategory) {
+          // Static question — use the scaffold-based persistence
           try {
-            await persistThisOrThatAnswerRecord(activeTotCategory.id, question as ThisOrThatV2QuestionLike, choice);
+            await persistThisOrThatAnswerRecord(activeTotCategory.id, question, choice);
           } catch {
             console.warn("Could not persist detailed answer record for:", question.id);
           }
+        } else if (question.source === "ai") {
+          // AI-generated question from shared bank — persist with DB UUIDs + brand info
+          const userId = (await supabase.auth.getUser()).data.user?.id;
+          if (userId) {
+            const selectedBrand = choice === "A" ? question.brandA : question.brandB;
+            const rejectedBrand = choice === "A" ? question.brandB : question.brandA;
+            const selectedTags = choice === "A" ? question.tagsForA : question.tagsForB;
+            const rejectedTags = choice === "A" ? question.tagsForB : question.tagsForA;
+            const catKey = question.categoryKey || "personal";
+            const now = new Date().toISOString();
+            try {
+              await (supabase as unknown as ThisOrThatAnswerWriter).from("this_or_that_v2_answers").upsert({
+                user_id: userId,
+                question_id: question.dbQuestionId,
+                question_key: question.id,
+                selected_option_id: choice === "A" ? question.dbOptionAId : question.dbOptionBId,
+                selected_option_key: choice,
+                rejected_option_id: choice === "A" ? question.dbOptionBId : question.dbOptionAId,
+                rejected_option_key: choice === "A" ? "B" : "A",
+                category_key: catKey,
+                subgroup_key: `ai-${catKey}`,
+                recommendation_category: catKey,
+                primary_keyword: "brand preference",
+                descriptor_keywords: selectedTags,
+                brand: selectedBrand || null,
+                location_keys: [],
+                answer_payload: {
+                  question_prompt: question.prompt,
+                  bank_gender: "shared" as const,
+                  selected_label: chosenLabel,
+                  rejected_label: rejectedLabel,
+                  selected_payload: {
+                    primary_keyword: "brand preference",
+                    descriptor_keywords: selectedTags,
+                    brand_keywords: selectedBrand ? [selectedBrand] : [],
+                    avoid_keywords: rejectedTags,
+                    category_slug: catKey,
+                    subcategory_slug: `ai-${catKey}`,
+                    entity_kind: "brand-cluster",
+                    entity_slug: chosenLabel.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                    location_keywords: [],
+                    weight: 0.9,
+                  },
+                  rejected_payload: {
+                    primary_keyword: "brand preference",
+                    descriptor_keywords: rejectedTags,
+                    brand_keywords: rejectedBrand ? [rejectedBrand] : [],
+                    avoid_keywords: selectedTags,
+                    category_slug: catKey,
+                    subcategory_slug: `ai-${catKey}`,
+                    entity_kind: "brand-cluster",
+                    entity_slug: rejectedLabel.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                    location_keywords: [],
+                    weight: 0.9,
+                  },
+                  response_payload: {
+                    category_slug: catKey,
+                    subcategory_slug: `ai-${catKey}`,
+                    selected: {
+                      option_key: choice,
+                      label: chosenLabel,
+                      metadata: {
+                        primary_keyword: "brand preference",
+                        descriptor_keywords: selectedTags,
+                        brand_keywords: selectedBrand ? [selectedBrand] : [],
+                        avoid_keywords: rejectedTags,
+                        category_slug: catKey,
+                        subcategory_slug: `ai-${catKey}`,
+                        entity_kind: "brand-cluster",
+                        entity_slug: chosenLabel.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                        location_keywords: [],
+                        weight: 0.9,
+                      },
+                    },
+                    rejected: {
+                      option_key: choice === "A" ? "B" : "A",
+                      label: rejectedLabel,
+                      metadata: {
+                        primary_keyword: "brand preference",
+                        descriptor_keywords: rejectedTags,
+                        brand_keywords: rejectedBrand ? [rejectedBrand] : [],
+                        avoid_keywords: selectedTags,
+                        category_slug: catKey,
+                        subcategory_slug: `ai-${catKey}`,
+                        entity_kind: "brand-cluster",
+                        entity_slug: rejectedLabel.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                        location_keywords: [],
+                        weight: 0.9,
+                      },
+                    },
+                    source_kind: "authored-v2" as const,
+                    weight: 0.9,
+                  },
+                },
+                response_source: "this_or_that_v2" as const,
+                source_version: "this-or-that-v2-ai",
+                answered_at: now,
+                updated_at: now,
+              } as unknown as ThisOrThatAnswerPayload, { onConflict: "user_id,question_key" });
+            } catch {
+              console.warn("Could not persist AI answer record for:", question.id);
+            }
+          }
         }
+
         void runKnowledgeRefresh({ [question.id]: chosenLabel });
       } catch {
         console.error("Background persist failed for:", question.id);
@@ -583,15 +647,7 @@ const KnowMe = () => {
     setBackState(null);
   }, [setBackState, view]);
 
-  // When AI questions arrive and we're stuck at the end of the queue, auto-advance
-  useEffect(() => {
-    if (view === "thisorthat" && totQueueIndex >= totQueue.length - 1 && totQueue.length > 0 && !aiQuestionsLoading) {
-      // If queue grew past our index, the new questions are ready
-      if (totQueueIndex < totQueue.length - 1) {
-        setTotQueueIndex((prev) => prev + 1);
-      }
-    }
-  }, [view, totQueue.length, totQueueIndex, aiQuestionsLoading]);
+  // (Bank growth is handled by loadQuestionBank automatically — no per-session AI polling needed)
 
   // Only show full-screen loading spinner on initial load, NOT during background refreshes
   // while the user is actively playing This or That or viewing a quiz
