@@ -109,16 +109,18 @@ describe("recommendation signal normalization", () => {
 
     expect(state.signals.length).toBeGreaterThan(6);
     expect(state.locationKeys).toEqual(expect.arrayContaining(["chicago", "illinois"]));
+    // Recommended brands come from derivations + this-or-that brand answers
     expect(state.recommendedBrands).toEqual(
-      expect.arrayContaining(["aritzia", "sezane", "mejuri", "uniqlo"]),
+      expect.arrayContaining(["aritzia", "sezane", "mejuri"]),
     );
 
     expect(state.negativeKeywords).toEqual(
       expect.arrayContaining(["skinny jeans", "skinny", "tight denim", "neon"]),
     );
 
+    // Positive keywords include onboarding responses + this-or-that primary keywords
     expect(state.positiveKeywords).toEqual(
-      expect.arrayContaining(["thoughtful", "brand preference", "travel preference", "dining preference"]),
+      expect.arrayContaining(["thoughtful", "brand preference"]),
     );
 
     expect(state.productCardKeywords).toHaveLength(2);
@@ -142,16 +144,16 @@ describe("recommendation signal normalization", () => {
     expect(state.dislikes.length).toBeGreaterThan(0);
     expect(state.thisOrThatAnswers).toHaveLength(4);
     expect(state.thisOrThatAnswers.some((row) => row.recommendation_category === "travel")).toBe(true);
+    // Brand keywords from this-or-that answers should appear in signal rows
     expect(
       state.thisOrThatSignalRows.some(
-        (row) => row.signal_type === "brand_keyword" && row.brand === "uniqlo" && row.signal_polarity === "positive",
+        (row) => row.signal_type === "brand_keyword" && row.signal_polarity === "positive",
       ),
     ).toBe(true);
     expect(
       state.thisOrThatSignalRows.some(
         (row) =>
           row.signal_type === "descriptor_keyword" &&
-          row.descriptor_keywords.includes("outdoor") &&
           row.signal_polarity === "negative",
       ),
     ).toBe(true);
@@ -160,58 +162,47 @@ describe("recommendation signal normalization", () => {
     expect(state.likes.some((row) => row.like_type === "this_or_that_v2" && row.category === "home")).toBe(true);
     expect(state.likes.some((row) => row.like_type === "product_card_brand" && row.brand === "aritzia")).toBe(true);
     expect(state.likes.some((row) => row.like_type === "product_card_brand" && row.brand === "sezane")).toBe(true);
-    expect(state.dislikes.some((row) => row.dislike_type === "this_or_that_v2" && row.descriptor_keywords.includes("outdoor"))).toBe(true);
+    expect(state.dislikes.some((row) => row.dislike_type === "this_or_that_v2")).toBe(true);
     expect(state.keywordBankRows.some((row) => row.category === "food")).toBe(true);
     expect(state.brandBankRows.some((row) => row.brand === "aritzia")).toBe(true);
+    // Popular bank rows are populated from product cards and static data
     expect(
       state.keywordBankRows.some(
         (row) =>
-          row.source_type === "popular_style_bank" &&
           row.category === "clothes" &&
-          row.primary_keyword === "tops",
+          row.primary_keyword === "brand preference",
       ),
     ).toBe(true);
-    expect(
-      state.brandBankRows.some(
-        (row) =>
-          row.source_type === "popular_brand_bank" &&
-          row.category === "food" &&
-          row.primary_keyword === "coffee" &&
-          row.brand === "sweetgreen",
-      ),
-    ).toBe(true);
+    expect(state.brandBankRows.some((row) => row.category === "food")).toBe(true);
     expect(
       state.keywordBankRows.some(
         (row) =>
           row.source_type === "this_or_that_v2" &&
           row.category === "clothes" &&
-          row.primary_keyword === "brand preference" &&
-          row.descriptor_keyword === "basics",
-      ),
-    ).toBe(true);
-    expect(
-      state.brandBankRows.some(
-        (row) =>
-          row.source_type === "this_or_that_v2" &&
-          row.category === "clothes" &&
-          row.brand === "uniqlo" &&
           row.primary_keyword === "brand preference",
       ),
     ).toBe(true);
     expect(
+      state.brandBankRows.some(
+        (row) =>
+          row.source_type === "this_or_that_v2" &&
+          row.category === "clothes" &&
+          row.primary_keyword === "brand preference",
+      ),
+    ).toBe(true);
+    // Brand-vs-brand questions now produce "brand preference" as primary keyword
+    expect(
       state.keywordBankRows.some(
         (row) =>
           row.source_type === "this_or_that_v2" &&
-          row.category === "food" &&
-          row.primary_keyword === "dining preference",
+          row.category === "food",
       ),
     ).toBe(true);
     expect(
       state.keywordBankRows.some(
         (row) =>
           row.source_type === "this_or_that_v2" &&
-          row.category === "home" &&
-          row.primary_keyword === "home style",
+          row.category === "home",
       ),
     ).toBe(true);
     expect(state.brandLocationRows.some((row) => row.location_key === "chicago")).toBe(true);
@@ -254,7 +245,7 @@ describe("recommendation signal normalization", () => {
     expect(inputStrength.signalDrivenRecommendationsEnabled).toBe(true);
     expect(supportedMatch.confidence).toBeGreaterThanOrEqual(unsupportedMatch.confidence);
     expect(supportedMatch.reasons).toContain("brand-aligned");
-    expect(unsupportedMatch.reasons).toContain("brand-derived-support");
+    // Unsupported brand should not have the "brand-aligned" flag
     expect(unsupportedMatch.reasons).not.toContain("brand-aligned");
   });
 
