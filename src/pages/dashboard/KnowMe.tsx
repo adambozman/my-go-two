@@ -998,14 +998,7 @@ const KnowMe = () => {
             {/* Inner vignette for depth */}
             <div className="absolute inset-0 pointer-events-none z-[1]" style={{ boxShadow: "inset 0 0 120px rgba(0,0,0,0.18)" }} />
 
-            {/* Question counter badge — top right */}
-            <div className="absolute top-4 right-4 z-20 pointer-events-none">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: "rgba(0,0,0,0.2)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
-                <span className="text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: "rgba(255,255,255,0.7)" }}>
-                  {totalTotAnswered + 1}
-                </span>
-              </div>
-            </div>
+
 
             {/* Tap zones — left = option A, right = option B */}
             <AnimatePresence mode="popLayout">
