@@ -1231,14 +1231,16 @@ const KnowMe = () => {
             <motion.button
               whileTap={{ scale: 0.985 }}
               onClick={openThisOrThat}
-              className="absolute overflow-hidden text-left group"
-              style={{ borderRadius: 20, background: kmTotOvr?.image_url ? "transparent" : "transparent", left: "56%", top: "0%", width: "44%", height: "22%" }}
+              className="absolute overflow-hidden text-left group cursor-pointer"
+              style={{ borderRadius: 20, left: "56%", top: "0%", width: "44%", height: "22%" }}
             >
               {/* Diagonal split — Go (coral/orange) left, Two (teal) right */}
               {!kmTotOvr?.image_url && (
                 <>
                   <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, #ef8555 0%, #eb4b3f 100%)", clipPath: "polygon(0 0, 62% 0, 38% 100%, 0 100%)" }} />
                   <div className="absolute inset-0" style={{ background: "linear-gradient(200deg, #00687a 0%, var(--swatch-teal) 100%)", clipPath: "polygon(62% 0, 100% 0, 100% 100%, 38% 100%)" }} />
+                  {/* Diagonal seam glow */}
+                  <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(160deg, transparent 47%, rgba(255,255,255,0.2) 49.5%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.2) 50.5%, transparent 53%)" }} />
                 </>
               )}
               <CardEditTrigger cardId="km-thisorthat" override={kmTotOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
@@ -1248,25 +1250,20 @@ const KnowMe = () => {
                   <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.35)" }} />
                 </>
               )}
-              <span className="absolute top-3 right-3 z-10 inline-flex items-center rounded-full px-2.5 py-1 text-[9px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)", backdropFilter: "blur(8px)" }}>
-                {visibleThisOrThatCount} prompts
-              </span>
-              <div className="relative z-[1] flex flex-col justify-between h-full p-5 md:p-6">
-                <p className="text-[10px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.65)" }}>Instinct deck</p>
-                <div>
-                  <p className="text-[28px] leading-[0.94] sm:text-[34px] md:text-[40px]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff" }}>
-                    {kmTotOvr?.heading || "This or That"}
-                  </p>
-                  <p className="text-[12px] leading-relaxed mt-2 max-w-[22ch] sm:text-[13px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>
-                    {kmTotOvr?.subheading || "Two options. One instinct. Your pattern builds over time."}
-                  </p>
+              {/* "This" on left (coral) side, "or" on seam, "That" on right (teal) side */}
+              <div className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none">
+                {/* This — left side */}
+                <p className="absolute text-[26px] sm:text-[32px] md:text-[38px] leading-[0.94]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)", left: "12%", top: "50%", transform: "translateY(-50%)" }}>
+                  This
+                </p>
+                {/* "or" badge on diagonal seam */}
+                <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.18)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.25)" }}>
+                  <span className="text-[9px] uppercase tracking-[0.06em]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: "rgba(255,255,255,0.7)" }}>or</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.6)" }}>{visibleThisOrThatAnswered} done</span>
-                  <div className="rounded-full w-9 h-9 flex items-center justify-center transition-transform group-hover:translate-x-0.5" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)" }}>
-                    <ChevronRight className="w-4 h-4 text-white" />
-                  </div>
-                </div>
+                {/* That — right side */}
+                <p className="absolute text-[26px] sm:text-[32px] md:text-[38px] leading-[0.94]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)", right: "12%", top: "50%", transform: "translateY(-50%)" }}>
+                  That
+                </p>
               </div>
             </motion.button>
 
@@ -1341,11 +1338,9 @@ const KnowMe = () => {
               </div>
             </div>
 
-            {/* Slot 8 — CATEGORIES BY QUESTION (left:74.5 top:48.5 w:25.5 h:51.5) */}
-            <motion.button
-              whileTap={{ scale: 0.99 }}
-              onClick={openCategoriesDashboard}
-              className="absolute overflow-hidden text-left group"
+            {/* Slot 8 — CATEGORIES (left:74.5 top:48.5 w:25.5 h:51.5) */}
+            <div
+              className="absolute overflow-hidden"
               style={{ borderRadius: 20, background: kmCatOvr?.image_url ? "transparent" : "var(--swatch-cream-light)", left: "74.5%", top: "48.5%", width: "25.5%", height: "51.5%" }}
             >
               <CardEditTrigger cardId="km-categories" override={kmCatOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
@@ -1355,35 +1350,11 @@ const KnowMe = () => {
                   <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.05) 100%)" }} />
                 </>
               )}
-              <div className="relative z-[1] flex flex-col h-full p-4 md:p-5">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-[9px] uppercase tracking-[0.16em]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.6)" : "var(--swatch-antique-coin)" }}>Explore</p>
-                  <span className="rounded-full px-2.5 py-0.5 text-[8px] uppercase tracking-[0.1em]" style={{ fontFamily: "'Jost', sans-serif", background: "rgba(var(--swatch-cedar-grove-rgb, 217,101,79), 0.1)", color: "var(--swatch-cedar-grove)", border: "1px solid rgba(var(--swatch-cedar-grove-rgb, 217,101,79), 0.18)" }}>
-                    {categories.length} categories
-                  </span>
-                </div>
-                <h2 className="text-[20px] leading-[0.96] sm:text-[24px] md:text-[28px] mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: kmCatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }}>
-                  {kmCatOvr?.heading || "Questions\nby Category"}
-                </h2>
-                {/* Stacked category list */}
-                <div className="flex-1 flex flex-col justify-center gap-2">
-                  {categories.map((cat) => (
-                    <div key={cat.id} className="flex items-center justify-between">
-                      <span className="text-[11px] sm:text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.9)" : "var(--swatch-teal)" }}>{cat.title}</span>
-                      <span className="text-[10px]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.5)" : "var(--swatch-antique-coin)" }}>{cat.visibleAnswered} / {cat.visibleTotal}</span>
-                    </div>
-                  ))}
-                </div>
-                {/* Footer */}
-                <div className="mt-auto pt-3 flex items-center justify-between" style={{ borderTop: `1px solid ${kmCatOvr?.image_url ? "rgba(255,255,255,0.12)" : "rgba(var(--swatch-teal-rgb), 0.1)"}` }}>
-                  <span className="text-[9px] uppercase tracking-[0.14em]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.5)" : "var(--swatch-antique-coin)" }}>Progress</span>
-                  <span style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: 16, color: kmCatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }}>
-                    {totalAnswered}<span style={{ fontWeight: 400, color: kmCatOvr?.image_url ? "rgba(255,255,255,0.4)" : "var(--swatch-antique-coin)", fontSize: 13 }}> / {totalQuestions}</span>
-                  </span>
-                </div>
+              <div className="relative z-[1] flex flex-col items-center justify-center h-full p-4 md:p-5 text-center">
+                <p className="text-[9px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.6)" : "var(--swatch-cedar-grove)" }}>Ad Space</p>
+                <p className="text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.4)" : "var(--swatch-antique-coin)" }}>Sponsored</p>
               </div>
-            </motion.button>
+            </div>
 
             {/* Slot 9 — QUOTES (left:0 top:72 w:51.5 h:28) */}
             {(() => {
