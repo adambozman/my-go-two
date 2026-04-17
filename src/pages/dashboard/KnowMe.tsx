@@ -1339,8 +1339,10 @@ const KnowMe = () => {
             </div>
 
             {/* Slot 8 — CATEGORIES (left:74.5 top:48.5 w:25.5 h:51.5) */}
-            <div
-              className="absolute overflow-hidden"
+            <motion.button
+              whileTap={{ scale: 0.99 }}
+              onClick={openCategoriesDashboard}
+              className="absolute overflow-hidden text-left group"
               style={{ borderRadius: 20, background: kmCatOvr?.image_url ? "transparent" : "var(--swatch-cream-light)", left: "74.5%", top: "48.5%", width: "25.5%", height: "51.5%" }}
             >
               <CardEditTrigger cardId="km-categories" override={kmCatOvr} onSaved={refreshOverrides} fields={["image_url", "heading", "subheading"]} />
@@ -1350,11 +1352,20 @@ const KnowMe = () => {
                   <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.05) 100%)" }} />
                 </>
               )}
-              <div className="relative z-[1] flex flex-col items-center justify-center h-full p-4 md:p-5 text-center">
-                <p className="text-[9px] uppercase tracking-[0.16em] mb-2" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.6)" : "var(--swatch-cedar-grove)" }}>Ad Space</p>
-                <p className="text-[10px] uppercase tracking-[0.12em]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.4)" : "var(--swatch-antique-coin)" }}>Sponsored</p>
+              <div className="relative z-[1] flex flex-col h-full p-4 md:p-5">
+                <h2 className="text-[20px] leading-[0.96] sm:text-[24px] md:text-[28px] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: kmCatOvr?.image_url ? "#fff" : "var(--swatch-teal)" }}>
+                  {kmCatOvr?.heading || "Questions\nby Category"}
+                </h2>
+                {/* Category list */}
+                <div className="flex-1 flex flex-col justify-center gap-2">
+                  {categories.map((cat) => (
+                    <div key={cat.id} className="flex items-center justify-between">
+                      <span className="text-[11px] sm:text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: kmCatOvr?.image_url ? "rgba(255,255,255,0.9)" : "var(--swatch-teal)" }}>{cat.title}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            </motion.button>
 
             {/* Slot 9 — QUOTES (left:0 top:72 w:51.5 h:28) */}
             {(() => {
