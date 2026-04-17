@@ -1265,6 +1265,12 @@ const KnowMe = () => {
                   That
                 </p>
               </div>
+              {/* Description — bottom left */}
+              <div className="absolute bottom-4 left-5 z-[1] pointer-events-none md:bottom-5 md:left-6">
+                <p className="text-[11px] leading-relaxed max-w-[20ch] sm:text-[12px]" style={{ fontFamily: "'Jost', sans-serif", color: "rgba(255,255,255,0.8)" }}>
+                  {kmTotOvr?.subheading || "Two options. One instinct. Your pattern builds over time."}
+                </p>
+              </div>
             </motion.button>
 
             {/* Slot 4 — ASK THE AI (left:27.5 top:24 w:24 h:45) */}
