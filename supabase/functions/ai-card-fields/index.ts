@@ -43,7 +43,7 @@ RULES:
 Use the provided tool to return the fields.`;
 
     const response = await fetch(
-      `${BASE}/gemini-2.5-flash-preview-04-17:generateContent?key=${GEMINI_API_KEY}`,
+      `${BASE}/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

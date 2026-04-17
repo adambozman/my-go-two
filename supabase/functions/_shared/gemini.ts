@@ -13,14 +13,14 @@
 
 const BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
-// Model name mapping — same logical models, native Gemini names
+// Model name mapping — stable GA models (updated April 2026)
 export const MODELS = {
   // Used for: vibe derivation, rec engine, autofill, style-chat
-  FLASH:       "gemini-2.5-flash-preview-04-17",
+  FLASH:       "gemini-2.5-flash",
   // Used for: card fields, quizzes, trending-feed
-  FLASH_LITE:  "gemini-2.0-flash-lite",
+  FLASH_LITE:  "gemini-2.5-flash-lite",
   // Used for: image generation (multimodal output)
-  FLASH_IMAGE: "gemini-2.0-flash-preview-image-generation",
+  FLASH_IMAGE: "gemini-2.5-flash-image",
 } as const;
 
 export type GeminiModel = typeof MODELS[keyof typeof MODELS];
