@@ -978,14 +978,18 @@ const KnowMe = () => {
             {/* Right side — Two color (teal) */}
             <div className="absolute inset-0" style={{ background: "linear-gradient(200deg, #00687a 0%, var(--swatch-teal) 100%)", clipPath: "polygon(58% 0, 100% 0, 100% 100%, 42% 100%)" }} />
 
-            {/* Diagonal seam — thin luminous edge where the two halves meet */}
-            <div className="absolute inset-0 pointer-events-none z-[2]" style={{ background: "linear-gradient(160deg, transparent 47.5%, rgba(255,255,255,0.22) 49.5%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.22) 50.5%, transparent 52.5%)" }} />
-
-            {/* "or" badge on the diagonal seam */}
-            <div className="absolute left-1/2 top-[22%] -translate-x-1/2 z-[3] pointer-events-none">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.18)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.25)" }}>
-                <span className="text-[10px] uppercase tracking-[0.08em]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: "rgba(255,255,255,0.7)" }}>or</span>
-              </div>
+            {/* Diagonal seam — thin luminous edge on the actual clip-path split (58% top → 42% bottom) */}
+            <div className="absolute inset-0 pointer-events-none z-[2]">
+              <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="seamGlow" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="rgba(255,255,255,0.35)" />
+                    <stop offset="50%" stopColor="rgba(255,255,255,0.2)" />
+                    <stop offset="100%" stopColor="rgba(255,255,255,0.35)" />
+                  </linearGradient>
+                </defs>
+                <line x1="58" y1="0" x2="42" y2="100" stroke="url(#seamGlow)" strokeWidth="0.4" />
+              </svg>
             </div>
 
             {/* Grain overlay */}
@@ -1256,10 +1260,7 @@ const KnowMe = () => {
                 <p className="absolute text-[26px] sm:text-[32px] md:text-[38px] leading-[0.94]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)", left: "12%", top: "50%", transform: "translateY(-50%)" }}>
                   This
                 </p>
-                {/* "or" badge on diagonal seam */}
-                <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.18)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.25)" }}>
-                  <span className="text-[9px] uppercase tracking-[0.06em]" style={{ fontFamily: "'Jost', sans-serif", fontWeight: 500, color: "rgba(255,255,255,0.7)" }}>or</span>
-                </div>
+
                 {/* That — right side */}
                 <p className="absolute text-[26px] sm:text-[32px] md:text-[38px] leading-[0.94]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, color: "#fff", textShadow: "0 2px 16px rgba(0,0,0,0.12)", right: "12%", top: "50%", transform: "translateY(-50%)" }}>
                   That
