@@ -595,7 +595,11 @@ const requestAiIntents = async (
   const aiEligiblePlans = categoryPlan.filter((entry) => entry.aiTarget > 0);
   const aiTargetCount = aiEligiblePlans.reduce((sum, entry) => sum + entry.aiTarget, 0);
 
+  console.log(`[ai-intents] categoryPlan: ${JSON.stringify(aiEligiblePlans.map(p => ({ c: p.category, ai: p.aiTarget })))}`);
+  console.log(`[ai-intents] aiTargetCount=${aiTargetCount}`);
+
   if (aiTargetCount === 0) {
+    console.log("[ai-intents] skipping Gemini call — aiTargetCount=0");
     return [];
   }
 
@@ -758,63 +762,92 @@ RULES:
 
 Use the provided tool.`;
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`,
-    {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      tools: [{ functionDeclarations: [{
-            name: "generate_recommendation_intents",
-            description: "Return recommendation intents for the Go Two replacement recommendation engine",
-            parameters: {
-              type: "object",
-              properties: {
-                intents: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      brand: { type: "string" },
-                      name: { type: "string" },
-                      price: { type: "string" },
-                      category: { type: "string", enum: categoryEnum },
-                      hook: { type: "string" },
-                      why: { type: "string" },
-                      recommendation_kind: { type: "string", enum: ["specific", "generic"] },
-                      search_query: { type: "string" },
-                      primary_keyword: { type: "string" },
-                      keywords: {
-                        type: "array",
-                        items: { type: "string" },
-                        minItems: 3,
-                        maxItems: 6,
-                      },
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`;
+  const geminiBody = JSON.stringify({
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+    tools: [{ functionDeclarations: [{
+          name: "generate_recommendation_intents",
+          description: "Return recommendation intents for the Go Two replacement recommendation engine",
+          parameters: {
+            type: "object",
+            properties: {
+              intents: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    brand: { type: "string" },
+                    name: { type: "string" },
+                    price: { type: "string" },
+                    category: { type: "string", enum: categoryEnum },
+                    hook: { type: "string" },
+                    why: { type: "string" },
+                    recommendation_kind: { type: "string", enum: ["specific", "generic"] },
+                    search_query: { type: "string" },
+                    primary_keyword: { type: "string" },
+                    keywords: {
+                      type: "array",
+                      items: { type: "string" },
+                      minItems: 3,
+                      maxItems: 6,
                     },
-                    required: ["brand", "name", "price", "category", "hook", "why", "recommendation_kind", "search_query", "primary_keyword", "keywords"],
-                    additionalProperties: false,
                   },
+                  required: ["brand", "name", "price", "category", "hook", "why", "recommendation_kind", "search_query", "primary_keyword", "keywords"],
                 },
               },
-              required: ["intents"],
-              additionalProperties: false,
             },
-          }] }],
-      toolConfig: { functionCallingConfig: { mode: "ANY", allowedFunctionNames: ["generate_recommendation_intents"] } },
-    }),
-  }
-  );
+            required: ["intents"],
+          },
+        }] }],
+    toolConfig: { functionCallingConfig: { mode: "ANY", allowedFunctionNames: ["generate_recommendation_intents"] } },
+  });
 
-  if (!response.ok) {
-    return [];
+  const MAX_RETRIES = 2;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const response = await fetch(geminiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: geminiBody,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "(unreadable)");
+        console.error(`[ai-intents] Gemini HTTP ${response.status} (attempt ${attempt}/${MAX_RETRIES}): ${errorText.slice(0, 500)}`);
+        if (attempt < MAX_RETRIES && (response.status === 429 || response.status === 503)) {
+          await new Promise((r) => setTimeout(r, 2000 * attempt));
+          continue;
+        }
+        return [];
+      }
+
+      const result = await response.json();
+      const finishReason = result.candidates?.[0]?.finishReason;
+      const parts = result.candidates?.[0]?.content?.parts ?? [];
+      const funcCall = parts.find((p: {functionCall?: {name: string}}) => p.functionCall?.name === "generate_recommendation_intents");
+      const parsed = funcCall?.functionCall?.args ?? null;
+      const intents = sanitizeIntents(parsed?.intents);
+
+      console.log(`[ai-intents] Gemini OK (attempt ${attempt}): finishReason=${finishReason}, parts=${parts.length}, funcCall=${!!funcCall}, intents=${intents.length}`);
+
+      if (intents.length === 0 && finishReason === "MAX_TOKENS" && attempt < MAX_RETRIES) {
+        console.warn(`[ai-intents] Gemini returned MAX_TOKENS with no intents — retrying`);
+        await new Promise((r) => setTimeout(r, 1000));
+        continue;
+      }
+
+      return intents;
+    } catch (err) {
+      console.error(`[ai-intents] Gemini fetch error (attempt ${attempt}/${MAX_RETRIES}):`, err);
+      if (attempt < MAX_RETRIES) {
+        await new Promise((r) => setTimeout(r, 2000 * attempt));
+        continue;
+      }
+      return [];
+    }
   }
 
-  const result = await response.json();
-  const parts = result.candidates?.[0]?.content?.parts ?? [];
-  const funcCall = parts.find((p: {functionCall?: {name: string}}) => p.functionCall?.name === "generate_recommendation_intents");
-  const parsed = funcCall?.functionCall?.args ?? null;
-  return sanitizeIntents(parsed?.intents);
+  return [];
 };
 
 const selectAcceptedAiIntents = (
