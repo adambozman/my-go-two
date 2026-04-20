@@ -1257,12 +1257,26 @@ serve(async (req) => {
       auth: { persistSession: false },
     });
 
-    const { data: authData, error: authError } = await supabase.auth.getUser();
-    const user: User | null = authData?.user ?? null;
-    if (authError || !user) return jsonResponse({ error: "Session expired", products: [] }, 401);
-
     const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
     const forceRefresh = Boolean(toObject(body).force_refresh);
+
+    // ── Batch mode: service-role caller can specify a user_id directly ──
+    // This allows the weekly cron to pre-generate recommendations for all users
+    // without needing individual user JWTs.
+    const batchUserId = toObject(body).batch_user_id as string | undefined;
+    let user: User | null = null;
+
+    if (batchUserId && authHeader === `Bearer ${supabaseServiceRoleKey}`) {
+      // Service role caller with explicit user_id — trusted batch mode
+      const { data: batchUser, error: batchError } = await admin.auth.admin.getUserById(batchUserId);
+      if (batchError || !batchUser?.user) return jsonResponse({ error: "Batch user not found", products: [] }, 404);
+      user = batchUser.user;
+    } else {
+      // Normal user JWT auth
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      user = authData?.user ?? null;
+      if (authError || !user) return jsonResponse({ error: "Session expired", products: [] }, 401);
+    }
     const weekStartKey = getWeekStartKey();
 
     if (!forceRefresh) {
@@ -1279,7 +1293,10 @@ serve(async (req) => {
       }
     }
 
-    const knowledgeState = await fetchKnowledgeCenterState(supabase, user.id);
+    // In batch mode (service-role), use admin client since there's no user JWT session.
+    // In normal mode, use the user-scoped supabase client.
+    const knowledgeClient = batchUserId ? admin : supabase;
+    const knowledgeState = await fetchKnowledgeCenterState(knowledgeClient, user.id);
     const thisOrThatAnswerRows = await loadThisOrThatAnswers(admin, user.id);
     const state = buildNormalizedRecommendationState(
       user.id,
