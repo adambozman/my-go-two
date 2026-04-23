@@ -12,8 +12,10 @@
     "autopush:setup": "powershell -ExecutionPolicy Bypass -File scripts/setup-autopush.ps1",
     "autopush:setup:all": "powershell -ExecutionPolicy Bypass -File scripts/setup-autopush.ps1 -AllBranches",
     "autopush:disable": "git config --unset core.hooksPath",
+    "rotate:google-oauth": "node scripts/rotate-google-oauth.js",
     "generate:seed": "python3 scripts/generate-seed.py",
-    "test": "vitest run",
+    "check:gemini-secrets": "node scripts/check-gemini-secrets.js",
+    "test": "npm run check:gemini-secrets && vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {

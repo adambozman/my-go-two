@@ -15,6 +15,7 @@ const Landing = lazy(() => import("./pages/Landing"));
 const Login = lazy(() => import("./pages/Login"));
 const Signup = lazy(() => import("./pages/Signup"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const Connect = lazy(() => import("./pages/Connect"));
 const DashboardLayout = lazy(() => import("./layouts/DashboardLayout"));
 const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome"));
@@ -66,6 +67,7 @@ const App = () => {
                       <Route path="/signup" element={<Signup />} />
                       <Route path="/forgot-password" element={<ForgotPassword />} />
                       <Route path="/reset-password" element={<ForgotPassword />} />
+                      <Route path="/auth/callback" element={<AuthCallback />} />
                       <Route path="/onboarding" element={<Onboarding />} />
                       <Route path="/connect" element={<Connect />} />
                       {/* Internal asset-management route, not part of the normal customer website. */}

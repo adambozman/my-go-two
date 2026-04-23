@@ -56,13 +56,14 @@ interface GeminiResponse {
 
 // ─── Core fetch ───────────────────────────────────────────────────────────────
 
-// Encoded key — decoded at runtime. Update GEMINI_API_KEY secret in
-// Supabase dashboard to avoid needing this fallback.
-const _K = "QVEuQWI4Uk42STFzWkFYcGF2XzBrSDRaNm9yUF9LY2xCTzVQYTBqazVzZUxMZ1h0WlotRUE=";
-const _decode = (b: string) => new TextDecoder().decode(Uint8Array.from(atob(b), c => c.charCodeAt(0)));
-
+// Resolve key at runtime from edge-function environment.
+// Gemini auth source of truth: Supabase secret GEMINI_API_KEY.
 function getApiKey(): string {
-  return _decode(_K);
+  const apiKey = Deno.env.get("GEMINI_API_KEY")?.trim();
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not configured");
+  }
+  return apiKey;
 }
 
 async function geminiPost(
@@ -188,3 +189,4 @@ export async function callGeminiForImage(
   }
   return null;
 }
+

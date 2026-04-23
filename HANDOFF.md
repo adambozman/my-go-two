@@ -115,6 +115,8 @@ All of those files are now superseded. Read this one.
 
 Shared helper: `supabase/functions/_shared/gemini.ts`
 
+Gemini auth source of truth: Supabase edge-function secret `GEMINI_API_KEY` only (no embedded fallbacks).
+
 Exports: `callGemini`, `callGeminiWithTool`, `callGeminiForImage`
 
 | Edge function | Model |

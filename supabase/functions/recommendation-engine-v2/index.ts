@@ -603,8 +603,11 @@ const requestAiIntents = async (
     return [];
   }
 
-  const _K = "QVEuQWI4Uk42STFzWkFYcGF2XzBrSDRaNm9yUF9LY2xCTzVQYTBqazVzZUxMZ1h0WlotRUE=";
-  const geminiApiKey = new TextDecoder().decode(Uint8Array.from(atob(_K), c => c.charCodeAt(0)));
+  const geminiApiKey = Deno.env.get("GEMINI_API_KEY")?.trim();
+  if (!geminiApiKey) {
+    console.error("[ai-intents] GEMINI_API_KEY is not configured - skipping Gemini intents");
+    return [];
+  }
 
   // ── Extract v3 spend signals via shared prompt builder ────────────────────
   const promptBlocks = buildRecPromptBlocks({
