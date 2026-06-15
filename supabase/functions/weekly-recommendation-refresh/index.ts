@@ -51,6 +51,12 @@ serve(async (req) => {
   }
 
   try {
+    // P0: enforce the auth contract this function already documents above —
+    // cron caller must present the service-role key (prevents JWT-holder fan-out abuse).
+    if (req.headers.get("Authorization") !== `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`) {
+      return jsonResponse({ error: "Unauthorized" }, 401);
+    }
+
     const supabaseUrl = getRequiredEnv("SUPABASE_URL");
     const supabaseServiceRoleKey = getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
     const supabaseAnonKey = getRequiredEnv("SUPABASE_ANON_KEY");

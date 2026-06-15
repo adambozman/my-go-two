@@ -227,6 +227,12 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // P0: maintenance/cron endpoint with verify_jwt=false — require the service-role key
+    // before doing any paid-API work or service-role writes. No app callers exist.
+    if (req.headers.get("Authorization") !== `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`) {
+      return jsonResponse({ error: "Unauthorized" }, 401);
+    }
+
     const supabaseUrl = getRequiredEnv("SUPABASE_URL");
     const serviceRoleKey = getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
     const firecrawlApiKey = getRequiredEnv("FIRECRAWL_API_KEY");

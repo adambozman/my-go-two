@@ -11,6 +11,15 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // P0: maintenance endpoint with verify_jwt=false — require the service-role key.
+    // No app callers exist; only trusted server/cron callers have this secret.
+    if (req.headers.get("Authorization") !== `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { rows } = await req.json();
     if (!Array.isArray(rows) || rows.length === 0) {
       throw new Error("No rows provided");

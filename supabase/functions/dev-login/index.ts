@@ -15,6 +15,15 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // P0: this endpoint mints a full session via the service-role key. It must be
+    // impossible to invoke in production. Only runs where DEV_LOGIN_ENABLED=true is set.
+    if (Deno.env.get("DEV_LOGIN_ENABLED") !== "true") {
+      return new Response(JSON.stringify({ error: "Not found" }), {
+        status: 404,
+        headers: corsHeaders,
+      });
+    }
+
     const { email } = await req.json();
     const normalizedEmail = String(email ?? "").toLowerCase().trim();
 

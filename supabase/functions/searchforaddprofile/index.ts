@@ -1661,14 +1661,6 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get("Authorization");
 
     if (!authHeader) {
-      if (["reset-test-profiles", "seed-demo-profiles"].includes(actionName)) {
-        const supabaseUrl = getRequiredEnv("SUPABASE_URL");
-        const serviceRoleKey = getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
-        const adminClient = createClient(supabaseUrl, serviceRoleKey);
-        const users = await resetTestProfiles(adminClient);
-        return jsonResponse({ success: true, users });
-      }
-
       return jsonResponse({ error: "No auth" }, 401);
     }
 
@@ -1682,10 +1674,8 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: "Unauthorized" }, 401);
     }
 
-    if (["reset-test-profiles", "seed-demo-profiles"].includes(actionName)) {
-      const users = await resetTestProfiles(adminClient);
-      return jsonResponse({ success: true, users });
-    }
+    // P0: test-profile reset removed — it ran service-role bulk deletes for any caller.
+    // Reseed/reset is now an offline DB task, not a reachable endpoint action.
 
     const anonKey = getRequiredEnv("SUPABASE_ANON_KEY");
     const viewerClient = createClient(
@@ -1803,12 +1793,7 @@ Deno.serve(async (req) => {
     }
 
     const searchQuery = String(payload?.query ?? "").trim();
-    let users = await searchUsers(viewerClient, adminClient, authData.user.id, searchQuery);
-
-    if (users.length === 0 && /(harper|rowan|test profile|gotwo\.local)/i.test(searchQuery)) {
-      await resetTestProfiles(adminClient);
-      users = await searchUsers(viewerClient, adminClient, authData.user.id, searchQuery);
-    }
+    const users = await searchUsers(viewerClient, adminClient, authData.user.id, searchQuery);
 
     return new Response(JSON.stringify({ users }), { headers: corsHeaders });
   } catch (error: unknown) {

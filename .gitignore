@@ -28,3 +28,11 @@ output/playwright/
 *.sln
 *.sw?
 .vercel
+
+# Environment — never commit secrets (publishable key is safe but keep the file out)
+.env
+.env*.local
+!.env.example
+
+# Local audit report (do not publish)
+AUDIT-my-go-two-*.md
